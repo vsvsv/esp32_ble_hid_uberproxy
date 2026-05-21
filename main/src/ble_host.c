@@ -23,6 +23,8 @@ static bool s_target_found = false;
 static esp_bd_addr_t s_target_bda;
 static esp_ble_addr_type_t s_target_addr_type;
 
+bool g_is_ble_connected = false;
+
 esp_err_t bhp_ble_setup_security(void);
 static void init_hid_connection_in_separate_task(void*);
 static bool check_device_is_already_bonded(struct ble_scan_result_evt_param* scan_result);
@@ -184,6 +186,8 @@ static void hidh_event_cb(void* handler_args, esp_event_base_t base, int32_t id,
     switch (event) {
         case ESP_HIDH_OPEN_EVENT: {
             if (p->open.status == ESP_OK) {
+                g_is_ble_connected = true;
+
                 const uint8_t* bda = esp_hidh_dev_bda_get(p->open.dev);
                 LOG_DEBUG(
                     "HID connection OPENED to MAC: %02x:%02x:%02x:%02x:%02x:%02x",
@@ -229,6 +233,8 @@ static void hidh_event_cb(void* handler_args, esp_event_base_t base, int32_t id,
             break;
         }
         case ESP_HIDH_CLOSE_EVENT: {
+            g_is_ble_connected = false;
+
             LOG_INFO("HID connection closed. Starting BLE scan again...");
             s_target_found = false;
             bhp_ble_start_scan(s_scan_timeout_sec, s_target_appearance);
@@ -308,11 +314,16 @@ esp_err_t bhp_ble_setup_security(void)
     uint8_t rsp_key = ESP_BLE_ENC_KEY_MASK | ESP_BLE_ID_KEY_MASK;
     uint8_t key_size = 16;
 
+    //  use static passkey for pairing BLE devices,
+    //  so it is easy to connect without seeing output logs
+    static uint32_t PAIRING_PASSKEY = 123456;
+
     ESP_BLE_SET_SECURITY_PARAM(ESP_BLE_SM_AUTHEN_REQ_MODE, auth_req);
     ESP_BLE_SET_SECURITY_PARAM(ESP_BLE_SM_IOCAP_MODE, iocap);
     ESP_BLE_SET_SECURITY_PARAM(ESP_BLE_SM_SET_INIT_KEY, init_key);
     ESP_BLE_SET_SECURITY_PARAM(ESP_BLE_SM_SET_RSP_KEY, rsp_key);
     ESP_BLE_SET_SECURITY_PARAM(ESP_BLE_SM_MAX_KEY_SIZE, key_size);
+    ESP_BLE_SET_SECURITY_PARAM(ESP_BLE_SM_SET_STATIC_PASSKEY, PAIRING_PASSKEY);
 
     esp_ble_gap_config_local_privacy(true);
     return ESP_OK;
