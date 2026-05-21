@@ -6,6 +6,7 @@ It allows to connect BLE HID peripherals (e. g. keyboards, mice) to the ESP32-S3
 
 Because PC will see them as regular USB wired devices, it allows to use BLE HID devices in environments that do not natively support Bluetooth, such as BIOS or UEFI.
 
+
 ## Building
 
 Before building, install the packages, required by ESP-IDF to your system.
@@ -23,6 +24,7 @@ Then, bootstrap the ESP SDK:
 ```sh
 git submodule update --init --recursive --depth 1
 
+./esp-idf/install.sh esp32s3
 source ./esp-idf/export.sh
 # source ./esp-idf/export.fish # if you are using fish
 ```
