@@ -19,3 +19,6 @@ CONFIG_ESP_MAIN_TASK_STACK_SIZE=8192
 
 # ---- Console via Native USB (JTAG) ----
 CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=n
+
+# ---- Compiler Optimizations ----
+CONFIG_COMPILER_OPTIMIZATION_PERF=y

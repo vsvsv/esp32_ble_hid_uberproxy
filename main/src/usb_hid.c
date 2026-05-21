@@ -5,10 +5,8 @@
 #include "usb_hid.h"
 
 // (1) is keyboard and (2) is consumer control (for f-row media buttons to work)
-static const uint8_t hid_report_descriptor[] = {
-    TUD_HID_REPORT_DESC_KEYBOARD(HID_REPORT_ID(1)),
-    TUD_HID_REPORT_DESC_CONSUMER(HID_REPORT_ID(2))
-};
+static const uint8_t hid_report_descriptor[] = { TUD_HID_REPORT_DESC_KEYBOARD(HID_REPORT_ID(1)),
+                                                 TUD_HID_REPORT_DESC_CONSUMER(HID_REPORT_ID(2)) };
 
 static const char* hid_string_descriptor[] = {
     (char[]){ 0x09, 0x04 }, // descriptor language
@@ -41,7 +39,9 @@ static const uint8_t hid_configuration_descriptor[] = {
 
 // host asks for a descriptor
 const uint8_t* tud_hid_descriptor_report_cb(uint8_t instance)
-{ return hid_report_descriptor; }
+{
+    return hid_report_descriptor;
+}
 
 // host asks for a report (of some sort)
 uint16_t tud_hid_get_report_cb(
@@ -51,7 +51,9 @@ uint16_t tud_hid_get_report_cb(
     uint8_t* buffer,
     uint16_t reqlen
 )
-{ return 0; }
+{
+    return 0;
+}
 
 // host sends data to the esp
 void tud_hid_set_report_cb(
@@ -73,10 +75,14 @@ esp_err_t bhp_usb_initialize_as_keyboard(void)
     cfg.descriptor.device = NULL;
     cfg.descriptor.full_speed_config = hid_configuration_descriptor;
     cfg.descriptor.string = hid_string_descriptor;
+    cfg.descriptor.string_count =
+        sizeof(hid_string_descriptor) / sizeof(hid_string_descriptor[0]) - 1;
 
     return tinyusb_driver_install(&cfg);
 }
 
 // checks that the device was connected to a host (PC)
 bool bhp_usb_hid_ready(void)
-{ return tud_mounted() && tud_hid_ready(); }
+{
+    return tud_mounted() && tud_hid_ready();
+}
