@@ -28,3 +28,18 @@ git submodule update --init --recursive --depth 1
 source ./esp-idf/export.sh
 # source ./esp-idf/export.fish # if you are using fish
 ```
+
+After bootstrapping the environment, set the target to ESP32-S3 and compile the firmware:
+
+```sh
+idf.py set-target esp32s3
+idf.py build
+```
+
+Finally, to flash the firmware to your board and open the serial monitor to view the logs, run:
+
+```sh
+idf.py flash monitor
+```
+
+*(Note: You may need to specify your serial port if it isn't automatically detected, e.g., `idf.py -p /dev/ttyACM0 flash monitor` or `idf.py -p COM3 flash monitor`.)*
