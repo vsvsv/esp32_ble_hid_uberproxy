@@ -4,7 +4,7 @@
 #include "esp_err.h"
 
 #define BHP_BLE_APPEARANCE_KEYBOARD 0x03C1
-#define BHP_BLE_APPEARANCE_MOUSE    0x03C2
+#define BHP_BLE_APPEARANCE_MOUSE 0x03C2
 
 // initialize BLE controller and non-volatile storage
 esp_err_t bhp_ble_initialize(void);

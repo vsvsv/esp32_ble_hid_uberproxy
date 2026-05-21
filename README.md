@@ -36,10 +36,12 @@ idf.py set-target esp32s3
 idf.py build
 ```
 
-Finally, to flash the firmware to your board and open the serial monitor to view the logs, run:
+Flash the firmware to the board:
 
 ```sh
-idf.py flash monitor
+idf.py flash
+
+#idf.py monitor  # to see console logs
 ```
 
-*(Note: You may need to specify your serial port if it isn't automatically detected, e.g., `idf.py -p /dev/ttyACM0 flash monitor` or `idf.py -p COM3 flash monitor`.)*
+*(Note: Specify serial port if it isn't automatically detected, e.g., `idf.py -p /dev/ttyACM0 flash monitor` or `idf.py -p COM3 flash monitor`.)*

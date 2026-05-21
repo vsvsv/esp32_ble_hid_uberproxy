@@ -111,7 +111,7 @@ static void gap_event_cb(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t* p
                 }
                 case ESP_GAP_SEARCH_INQ_CMPL_EVT: { // scan completed
                     s_is_scanning = false;
-                    LOG_INFO("No HID devices found. Continuing scan...");
+                    LOG_INFO("No HID devices found. Restarting scan...");
                     bhp_ble_start_scan(s_scan_timeout_sec, s_target_appearance);
                     break;
                 }
@@ -129,15 +129,19 @@ static void gap_event_cb(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t* p
             break;
         }
         case ESP_GAP_BLE_PASSKEY_NOTIF_EVT: { // a passcode need to be typed on the BLE device
-            LOG_INFO("=================================================");
-            LOG_INFO("|| PAIRING CODE: %06" PRIu32, param->ble_security.key_notif.passkey);
-            LOG_INFO("|| Type this on the BLE Keyboard and press ENTER!");
-            LOG_INFO("=================================================");
+            LOG_INFO("");
+            LOG_INFO("  ┌────────────────────────────────────────────────────┐");
+            LOG_INFO("  │          ENTER PASSCODE TO PAIR THE DEVICE         │");
+            LOG_INFO("  ├────────────────────────────────────────────────────┤");
+            LOG_INFO("  │   PAIRING CODE: %06" PRIu32 "                      │", param->ble_security.key_notif.passkey);
+            LOG_INFO("  │   Type this on the BLE Keyboard and press ENTER!   │");
+            LOG_INFO("  └────────────────────────────────────────────────────┘");
+            LOG_INFO("");
             break;
         }
         case ESP_GAP_BLE_AUTH_CMPL_EVT: { // pairing process ended
             if (param->ble_security.auth_cmpl.success) {
-                LOG_INFO("Pairing SUCCESS! Device securely bonded.");
+                LOG_INFO("Pairing SUCCESS! Device bonded to the ESP32.");
             } else {
                 LOG_ERROR(
                     "Pairing FAILED! Reason: 0x%x", param->ble_security.auth_cmpl.fail_reason
@@ -314,8 +318,8 @@ esp_err_t bhp_ble_setup_security(void)
     uint8_t rsp_key = ESP_BLE_ENC_KEY_MASK | ESP_BLE_ID_KEY_MASK;
     uint8_t key_size = 16;
 
-    //  use static passkey for pairing BLE devices,
-    //  so it is easy to connect without seeing output logs
+    // use static passkey for pairing BLE devices,
+    // so it is easy to connect without seeing output logs
     static uint32_t PAIRING_PASSKEY = 123456;
 
     ESP_BLE_SET_SECURITY_PARAM(ESP_BLE_SM_AUTHEN_REQ_MODE, auth_req);

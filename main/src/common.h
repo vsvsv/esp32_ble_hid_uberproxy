@@ -15,7 +15,8 @@ static const char* BHP_DEVICE_TAG = "[BLE HID UberProxy]";
 #ifdef BHP_ENABLE_VERBOSE_LOGS
     #define LOG_DEBUG(format, ...) ESP_LOGI(BHP_DEVICE_TAG, format, ##__VA_ARGS__)
 #else
-    #define LOG_DEBUG(format, ...) do {} while(0)
+
+    #define LOG_DEBUG(format, ...) do {} while (0)
 #endif
 
 #define LOG_INFO(format, ...) ESP_LOGI(BHP_DEVICE_TAG, format, ##__VA_ARGS__)
@@ -28,7 +29,7 @@ typedef enum {
 
 // represents one keyboard event
 typedef struct {
-bhp_report_type_t report_id;
+    bhp_report_type_t report_id;
     uint8_t modifier;
     uint8_t keycode[6];
     uint16_t consumer_key;

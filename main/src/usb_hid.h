@@ -1,8 +1,8 @@
 #ifndef BHP_USB_HID
 #define BHP_USB_HID
 
-#include "esp_err.h"
 #include "class/hid/hid_device.h"
+#include "esp_err.h"
 
 // --- tinyusb callbacks ---
 
