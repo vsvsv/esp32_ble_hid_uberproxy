@@ -1,10 +1,10 @@
 #ifndef BHP_COMMON
 #define BHP_COMMON
 
-// uncomment this out to enable verbose logging
+// comment this out to disable verbose logging
 #define BHP_ENABLE_VERBOSE_LOGS
 
-#define ALIGN(X) __attribute__((aligned(4)))
+#define ALIGN(X) __attribute__((aligned(X)))
 
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
