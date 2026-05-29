@@ -38,6 +38,6 @@ typedef struct {
 // RTOS queue to connect BLE input to USB bus output
 extern QueueHandle_t g_keyboard_queue;
 
-extern bool g_is_ble_connected;
+extern volatile bool g_is_ble_connected;
 
 #endif // BHP_COMMON

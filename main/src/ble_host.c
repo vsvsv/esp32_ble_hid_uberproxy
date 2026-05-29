@@ -15,15 +15,15 @@
 #include "ble_host.h"
 #include "common.h"
 
-static bool s_is_scanning = false;
+static volatile bool s_is_scanning = false;
 static uint32_t s_scan_timeout_sec = 0;
 static uint16_t s_target_appearance = 0;
 
-static bool s_target_found = false;
+static volatile bool s_target_found = false;
 static esp_bd_addr_t s_target_bda;
 static esp_ble_addr_type_t s_target_addr_type;
 
-bool g_is_ble_connected = false;
+volatile bool g_is_ble_connected = false;
 
 esp_err_t bhp_ble_setup_security(void);
 static void init_hid_connection_in_separate_task(void*);
@@ -165,13 +165,15 @@ static bool check_device_is_already_bonded(struct ble_scan_result_evt_param* sca
         return false;
     }
     esp_ble_get_bond_device_list(&dev_num, dev_list);
+    bool found = false;
     for (int i = 0; i < dev_num; i++) {
         if (memcmp(scan_result->bda, dev_list[i].bd_addr, sizeof(esp_bd_addr_t)) == 0) {
-            return true;
+            found = true;
+            break;
         }
     }
     free(dev_list);
-    return false;
+    return found;
 }
 
 static void init_hid_connection_in_separate_task(void* params)
@@ -225,14 +227,18 @@ static void hidh_event_cb(void* handler_args, esp_event_base_t base, int32_t id,
                 memcpy(report.keycode, &p->input.data[1], num_keys);
 
                 // push new events to the RTOS BLE->USB queue
-                xQueueSend(g_keyboard_queue, &report, 0);
+                if (xQueueSend(g_keyboard_queue, &report, 0) != pdTRUE) {
+                    LOG_DEBUG("Queue full, keyboard report dropped");
+                }
             } else if (p->input.usage == ESP_HID_USAGE_CCONTROL && p->input.length >= 3) {
                 bhp_key_report_t report = { 0 };
                 report.report_id = BHP_REPORT_TYPE_CONSUMER;
 
                 report.consumer_key = p->input.data[0] | (p->input.data[1] << 8);
 
-                xQueueSend(g_keyboard_queue, &report, 0);
+                if (xQueueSend(g_keyboard_queue, &report, 0) != pdTRUE) {
+                    LOG_DEBUG("Queue full, consumer report dropped");
+                }
             }
             break;
         }
